@@ -8,6 +8,13 @@ import (
 	"net/http"
 )
 
+var client = ethclient.Client{nil}
+
+func returnClient()(client1 ethclient.Client)  {
+	client1 = client
+	return
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	title := "Test"
 
@@ -23,7 +30,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fmt.Println("we have a connection")
 	_ = client // we'll use this in the upcoming sections
 }
@@ -32,4 +38,3 @@ func main() {
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
-g
