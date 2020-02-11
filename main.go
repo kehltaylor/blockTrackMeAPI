@@ -22,7 +22,7 @@ type User struct {
 	gorm.Model
 	FistName  	string `json:"firstName"`
 	LastName 	string `json:"lastName"`
-	PubKey		string `json:"pubkey"`
+	PubKey		string `json:"pubKey"`
 }
 
 func main() {
@@ -35,7 +35,8 @@ func main() {
 	log.Println("connected to DB")
 	r := mux.NewRouter()
 	r.HandleFunc("/", connection).Methods("POST")
-	r.HandleFunc("/createWallet", createWallet).Methods("POST")
+	r.HandleFunc("/showUserHandler", showUserHandler).Methods("POST")
+	r.HandleFunc("/createUserHeader", createUserHandler).Methods("POST")
 	http.ListenAndServe(":8080", r)
 }
 
@@ -80,24 +81,7 @@ func connection(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func showUserHandler(w http.ResponseWriter, r *http.Request) {
-	var user User
 
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	DB.Where("fist_name = ?", user.FistName).First(&user)
-	res, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(res)
-}
 
 
 
