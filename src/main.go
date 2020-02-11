@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -37,6 +38,8 @@ func main() {
 	r.HandleFunc("/", connection).Methods("POST")
 	r.HandleFunc("/showUserHandler", showUserHandler).Methods("POST")
 	r.HandleFunc("/createUserHeader", createUserHandler).Methods("POST")
+	r.HandleFunc("/deployContract", features.DeployContract).Methods("POST")
+	r.HandleFunc("/transaction", features.GenerateTransaction).Methods("POST")
 	http.ListenAndServe(":8080", r)
 }
 
@@ -80,6 +83,28 @@ func connection(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 }
+
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	title := "Test"
+
+	from := ""
+	if r.URL != nil {
+		from = r.URL.String()
+	}
+	if from != "/favicon.ico" {
+		log.Printf("title: %s\n", title)
+	}
+
+	client, err := ethclient.Dial("https://ropsten.infura.io/v3/511162a74a0c4a80a9fbab7b9d2718b8")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("we have a connection")
+	utils.SetClient(*client)
+	_ = client // we'll use this in the upcoming sections
+}
+
 
 
 
