@@ -1,4 +1,6 @@
-FROM scratch
-EXPOSE 8080
-ENTRYPOINT ["/blocktrackmeapi"]
-COPY ./bin/ /
+FROM golang:latest
+RUN mkdir /app
+ADD . /app/
+WORKDIR /app
+RUN go build -o main .
+CMD ["/app/main"]
