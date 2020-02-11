@@ -1,6 +1,9 @@
 package main
 
 import (
+	_ "./contracts"
+	"./pkg"
+	"./utils"
 	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum/ethclient"

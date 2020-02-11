@@ -3,25 +3,22 @@ package features
 //https://goethereumbook.org/en/transfer-tokens/
 
 import (
-	"../utils"
-	"context"
-	"crypto/ecdsa"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"golang.org/x/crypto/sha3"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/fmt"
-	"math/big"
+	//"context"
+	//"crypto/ecdsa"
+	//"github.com/ethereum/go-ethereum"
+	//"github.com/ethereum/go-ethereum/common"
+	//"github.com/ethereum/go-ethereum/common/hexutil"
+	//"github.com/ethereum/go-ethereum/core/types"
+	//"golang.org/x/crypto/sha3"
+	//"golang.org/x/tools/go/ssa/interp/testdata/src/fmt"
+	//"math/big"
 	"net/http"
 
 	//"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/crypto"
-	_ "github.com/ethereum/go-ethereum/ethclient"
-	"log"
+	//"github.com/ethereum/go-ethereum/crypto"
+	//_ "github.com/ethereum/go-ethereum/ethclient"
+	//"log"
 
-	//"net/http"
-	token "../Contracts"
 )
 
 type Transaction struct{
@@ -67,10 +64,10 @@ func GenerateTransaction(w http.ResponseWriter, r *http.Request){
 
 
 
-	client := utils.ReturnClient()
-
-	tokenAddress := common.HexToAddress(utils.GetContractAddress())
-	instance, err := token.NewToken(tokenAddress, client)
+	//client := utils.ReturnClient()
+	//
+	//tokenAddress := common.HexToAddress(utils.GetContractAddress())
+	//instance, err := token.NewToken(tokenAddress, client)
 	/*privateKey, err := crypto.HexToECDSA(_hexPK)
 	if err != nil {
 		log.Fatal(err)

@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	//"github.com/ethereum/go-ethereum/ethclient"
 
-	store "../Contracts" // for demo
+	store "../contracts" // for demo
 )
 
 func DeployContract(w http.ResponseWriter, r *http.Request) {
