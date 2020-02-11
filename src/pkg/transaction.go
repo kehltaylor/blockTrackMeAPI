@@ -1,29 +1,36 @@
-package main
+package features
 
 //https://goethereumbook.org/en/transfer-tokens/
 
 import (
+	"../utils"
+	"context"
 	"crypto/ecdsa"
-	"fmt"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	//"github.com/ethereum/go-ethereum/ethclient"
-	_ "github.com/ethereum/go-ethereum/ethclient"
 	"golang.org/x/crypto/sha3"
-	"golang.org/x/net/context"
-	"log"
+	"golang.org/x/tools/go/ssa/interp/testdata/src/fmt"
 	"math/big"
+	"net/http"
+
+	//"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/crypto"
+	_ "github.com/ethereum/go-ethereum/ethclient"
+	"log"
+
 	//"net/http"
+	token "../Contracts"
 )
 
 type Transaction struct{
 	value int
 }
 
-func generateTransaction(_toAddress string, _tokenAddress string, _hexPK string, _amout int){
+
+
+func GenerateTransaction(w http.ResponseWriter, r *http.Request){
 	/*value := big.NewInt(0)
 	toAddress := common.HexToAddress(_toAddress)
 	tokenAddress := common.HexToAddress(_tokenAddress)
@@ -58,9 +65,13 @@ func generateTransaction(_toAddress string, _tokenAddress string, _hexPK string,
 	tx := types.NewTransaction(nonce, tokenAddress, value, gasLimit, gasPrice, data)*/
 
 
-	client := returnClient()
 
-	privateKey, err := crypto.HexToECDSA(_hexPK)
+
+	client := utils.ReturnClient()
+
+	tokenAddress := common.HexToAddress(utils.GetContractAddress())
+	instance, err := token.NewToken(tokenAddress, client)
+	/*privateKey, err := crypto.HexToECDSA(_hexPK)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -133,4 +144,6 @@ func generateTransaction(_toAddress string, _tokenAddress string, _hexPK string,
 	}
 
 	fmt.Printf("tx sent: %s", signedTx.Hash().Hex())
+*/
+	 
 }

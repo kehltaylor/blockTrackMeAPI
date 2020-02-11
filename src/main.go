@@ -1,19 +1,21 @@
 package main
 
 import (
+	"./pkg"
+	"./utils"
 	"fmt"
 	"github.com/ethereum/go-ethereum/ethclient"
 	_ "github.com/ethereum/go-ethereum/ethclient"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
-var client = ethclient.Client{nil}
+var client = ethclient.Client{}
 
-func returnClient()(client1 ethclient.Client)  {
-	client1 = client
-	return
-}
+
+
+
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	title := "Test"
@@ -31,10 +33,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	fmt.Println("we have a connection")
+	utils.SetClient(*client)
 	_ = client // we'll use this in the upcoming sections
 }
 
+
 func main() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	println("STARTING...")
+	//dat, err := os.Getwd()
+
+
+	r := mux.NewRouter()
+	r.HandleFunc("/", handler).Methods("GET")
+	r.HandleFunc("/deployContract", features.DeployContract).Methods("POST")
+	r.HandleFunc("/transaction", features.GenerateTransaction).Methods("POST")
+	http.ListenAndServe(":8080", r)
+
 }
