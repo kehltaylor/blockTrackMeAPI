@@ -51,6 +51,7 @@ func main() {
 	r.HandleFunc("/createUserHeader", createUserHandler).Methods("POST")
 	r.HandleFunc("/deployContract", DeployContract).Methods("POST")
 	r.HandleFunc("/transaction", sendTransaction).Methods("POST")
+	r.HandleFunc("/getTransaction", GetTransaction).Methods("POST")
 	http.ListenAndServe(":8080", r)
 }
 
