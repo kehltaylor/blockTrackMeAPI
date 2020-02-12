@@ -21,6 +21,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(res)
 }
 
@@ -33,12 +34,14 @@ func showUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DB.Where("fist_name = ?", user.FistName).First(&user)
+	DB.Where("pub_key = ?", user.PubKey).First(&user)
 	res, err := json.Marshal(user)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Write(res)
 }

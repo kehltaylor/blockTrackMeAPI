@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/rs/cors"
 	"log"
 	"math/big"
 	"net/http"
@@ -51,7 +52,13 @@ func main() {
 	r.HandleFunc("/createUserHeader", createUserHandler).Methods("POST")
 	r.HandleFunc("/deployContract", DeployContract).Methods("POST")
 	r.HandleFunc("/transaction", sendTransaction).Methods("POST")
-	http.ListenAndServe(":8080", r)
+
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // All origins
+		AllowedMethods: []string{"GET", "HEAD", "POST", "PUT", "OPTIONS"}, // Allowing only get, just an example
+	})
+
+	http.ListenAndServe(":8080", c.Handler(r))
 }
 
 func dbConnect()(*gorm.DB, error){
