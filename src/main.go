@@ -1,16 +1,18 @@
 package main
 
 import (
-	_ "./contracts"
-	"./pkg"
-	"./utils"
+	"context"
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"log"
+	"math/big"
 	"net/http"
 	"time"
 )
@@ -18,9 +20,15 @@ import (
 var DB *gorm.DB
 var err error
 
+type ERC20Contract struct {
+	addr  	string `json:"addr"`
+
+}
+
 type ClientConnection struct {
 	Status    string
 }
+
 
 type User struct {
 	gorm.Model
@@ -41,8 +49,8 @@ func main() {
 	r.HandleFunc("/", connection).Methods("POST")
 	r.HandleFunc("/showUserHandler", showUserHandler).Methods("POST")
 	r.HandleFunc("/createUserHeader", createUserHandler).Methods("POST")
-	r.HandleFunc("/deployContract", features.DeployContract).Methods("POST")
-	r.HandleFunc("/transaction", features.GenerateTransaction).Methods("POST")
+	r.HandleFunc("/deployContract", DeployContract).Methods("POST")
+	r.HandleFunc("/transaction", sendTransaction).Methods("POST")
 	http.ListenAndServe(":8080", r)
 }
 
@@ -70,44 +78,69 @@ func dbConnect()(*gorm.DB, error){
 }
 
 func connection(w http.ResponseWriter, r *http.Request) {
+
 	client, err := ethclient.Dial("https://ropsten.infura.io/v3/511162a74a0c4a80a9fbab7b9d2718b8")
 	if err != nil {
 		log.Fatal(err)
 	}
 	_ = client // we'll use this in the upcoming sections
-	clientConnection := ClientConnection{"Done"}
 
-	js, err := json.Marshal(clientConnection)
+
+	fmt.Println("Inside function")
+
+	//privateKey, err := crypto.HexToECDSA("fad9c8855b740a0b7ed4c221dbad0f33a83a49cad6b3fe8d5817ac83d38b6a19")
+	privateKey, err := crypto.HexToECDSA("E6F9A2469E33F7808666ED49CB88C4AB6637E08AE6ADD0CFAC4681CB0D87B3F7")
+
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+	fmt.Println("Read Private key")
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("error casting public key to ECDSA")
+	}
+	fmt.Println("Public key good")
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		log.Fatal("Nounce shit went wrong")
+		log.Fatal(err)
+	}
+	fmt.Println("Nounce good")
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	auth := bind.NewKeyedTransactor(privateKey)
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(1000)     // in wei
+	auth.GasLimit = uint64(3000000) // in units
+	auth.GasPrice = gasPrice
+
+	address, tx, instance, err := DeployTheContract(auth, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(address.Hex())   // 0x147B8eb97fD247D06C4006D269c90C1908Fb5D54
+	fmt.Println(tx.Hash().Hex()) // 0xdae8ba5444eefdc99f4d45cd0c4f24056cba6a02cefbf78066ef9f4188ff7dc0
+
+	SetContractAddress(address.Hex())
+	var theContract = ERC20Contract{address.Hex()}
+	res, err := json.Marshal(theContract)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
 		return
 	}
+	_ = instance
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	w.Write(res)
 }
-
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	title := "Test"
-
-	from := ""
-	if r.URL != nil {
-		from = r.URL.String()
-	}
-	if from != "/favicon.ico" {
-		log.Printf("title: %s\n", title)
-	}
-
-	client, err := ethclient.Dial("https://ropsten.infura.io/v3/511162a74a0c4a80a9fbab7b9d2718b8")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("we have a connection")
-	utils.SetClient(*client)
-	_ = client // we'll use this in the upcoming sections
-}
-
 
 
 

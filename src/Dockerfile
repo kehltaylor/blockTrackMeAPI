@@ -1,4 +1,5 @@
 FROM golang:latest
+ARG GO111MODULE=on
 RUN mkdir /app
 ADD . /app/
 WORKDIR /app
