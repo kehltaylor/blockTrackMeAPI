@@ -75,6 +75,7 @@ func GetTransaction(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	//fmt.Println(pubKey.publicKey)
+	var PK = user.PubKey
 	DB.Where("pub_key = ?",user.PubKey).First(&user)
 
 	/*res, err := json.Marshal(user)
@@ -101,7 +102,7 @@ func GetTransaction(w http.ResponseWriter, r *http.Request){
 	fmt.Println(len(s.Result))
 
 	for _,element := range s.Result{
-		if element.From == user.PubKey {
+		if element.From == PK {
 			DB.Where("pub_key = ?",element.From).First(&user)
 			u := UserConnected{}
 			u.PK = element.To
