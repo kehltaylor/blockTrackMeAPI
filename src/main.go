@@ -52,6 +52,7 @@ func main() {
 	r.HandleFunc("/createUserHeader", createUserHandler).Methods("POST")
 	r.HandleFunc("/deployContract", DeployContract).Methods("POST")
 	r.HandleFunc("/transaction", sendTransaction).Methods("POST")
+	r.HandleFunc("/getTransaction", GetTransaction).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"}, // All origins
@@ -59,6 +60,7 @@ func main() {
 	})
 
 	http.ListenAndServe(":8080", c.Handler(r))
+
 }
 
 func dbConnect()(*gorm.DB, error){
